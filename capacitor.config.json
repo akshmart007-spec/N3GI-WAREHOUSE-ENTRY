@@ -1,0 +1,8 @@
+{
+  "appId": "com.n3gi.warehouse",
+  "appName": "N3GI Warehouse",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}
