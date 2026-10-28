@@ -1,0 +1,50 @@
+name: Build APK
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install packages
+        run: npm install
+
+      - name: Prepare web files
+        run: |
+          mkdir -p www
+          cp index.html www/index.html
+          cp node_modules/exceljs/dist/exceljs.min.js www/exceljs.min.js
+
+      - name: Add Android project
+        run: npx cap add android
+
+      - name: Sync
+        run: npx cap sync android
+
+      - name: Build debug APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Rename APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk N3GI-Warehouse.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: N3GI-Warehouse-APK
+          path: N3GI-Warehouse.apk
